@@ -21,7 +21,14 @@ Featuring YouTube/SoundCloud playback and 24/7 JPOP radio.</sub>
 
 <br>
 
-<b>Installation</b>
+<b>Getting Started</b>
+
+You can either invite the hosted bot to your server or host it yourself.
+
+<b>Option 1: Invite to Server</b>
+[Click here to invite Maou-bot to your Discord server](https://discord.com/oauth2/authorize?client_id=1526849354655076504&permissions=36785152&integration_type=0&scope=bot)
+
+<b>Option 2: Self-Host</b>
 
 1. Clone the repository:
 ```bash
