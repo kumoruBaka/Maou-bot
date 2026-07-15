@@ -3,6 +3,8 @@
 <sub><b>A simple and lightweight Discord music bot</b><br>
 Featuring YouTube/SoundCloud playback and 24/7 JPOP radio.</sub>
 
+<br>
+<img src="https://cdn.discordapp.com/app-icons/1526849354655076504/229e076f6d8f7b83e648cf6242f3fea6.png?size=256" alt="Maou-bot Logo" width="128" height="128">
 <br><br>
 
 <b>Features</b>
