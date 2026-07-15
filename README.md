@@ -81,4 +81,4 @@ Prefix: `mao.`
 <br>
 
 <b>Contributors</b>
-- [kunomaru (lynlll_)](https://github.com/kumoruBaka) - Creator & Developer
+- [kunomaru (discord: lynlll_)](https://github.com/kumoruBaka) - Creator & Developer
