@@ -7,6 +7,11 @@ Featuring YouTube/SoundCloud playback and 24/7 JPOP radio.</sub>
 <img src="https://cdn.discordapp.com/app-icons/1526849354655076504/229e076f6d8f7b83e648cf6242f3fea6.png?size=256" alt="Maou-bot Logo" width="128" height="128">
 <br><br>
 
+<b>Screenshots</b><br>
+<img src="image.png" alt="Now Playing" width="300">
+<img src="image1.png" alt="Help Command" width="300">
+<br><br>
+
 <b>Features</b>
 -  Play music from YouTube and SoundCloud
 -  24/7 JPOP Radio streaming via listen.moe
