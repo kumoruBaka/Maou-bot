@@ -21,8 +21,39 @@ Featuring YouTube/SoundCloud playback and 24/7 JPOP radio.</sub>
 <br>
 
 <b>Prerequisites</b>
-- Node.js (v18 or higher)
-- FFmpeg (required for audio playback)
+
+Make sure the following are installed on your system before running the bot:
+
+- **Node.js** (v18 or higher)
+- **FFmpeg** (required, must be installed system-wide and available in PATH)
+- **npm** (comes bundled with Node.js)
+- A **Discord Bot Token** (create one via [Discord Developer Portal](https://discord.com/developers/applications))
+
+<details>
+<summary><b>How to install FFmpeg</b></summary>
+<br>
+
+**Windows:**
+1. Download from [ffmpeg.org](https://ffmpeg.org/download.html)
+2. Extract and add the `bin` folder to your system PATH
+
+**Linux (Debian/Ubuntu):**
+```bash
+sudo apt update
+sudo apt install ffmpeg
+```
+
+**macOS (via Homebrew):**
+```bash
+brew install ffmpeg
+```
+
+Verify installation:
+```bash
+ffmpeg -version
+```
+</details>
+<br>
 
 <br>
 
