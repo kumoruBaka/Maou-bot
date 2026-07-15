@@ -76,3 +76,8 @@ Prefix: `mao.`
 - Unofficial listen.moe stream bot made by kunomaru.
 - Radio stream and API provided by the [LISTEN.moe](https://listen.moe/) team.
 - Inspired by the official [LISTEN-moe/discord-bot](https://github.com/LISTEN-moe/discord-bot).
+
+<br>
+
+<b>Contributors</b>
+- [kunomaru (lynlll_)](https://github.com/kumoruBaka) - Creator & Developer
