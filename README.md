@@ -1,38 +1,46 @@
- 
-# Maou-bot
+<h1>Maou-bot</h1>
 
-A simple and lightweight Discord music bot featuring YouTube/SoundCloud playback, 24/7 JPOP radio (listen.moe), and a built-in web dashboard.
+<sub><b>A simple and lightweight Discord music bot</b><br>
+Featuring YouTube/SoundCloud playback, 24/7 JPOP radio, and a web dashboard.</sub>
 
-## Features
+<br><br>
+
+<b>Features</b>
 -  Play music from YouTube and SoundCloud
 -  24/7 JPOP Radio streaming via listen.moe
 -  Multi-language support (English, Indonesian, Japanese)
 -  Built-in web dashboard for bot status
 -  Session ownership system
 
-## Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [FFmpeg](https://ffmpeg.org/) (required for audio playback)
+<br>
 
-## Installation
+<b>Prerequisites</b>
+- Node.js (v18 or higher)
+- FFmpeg (required for audio playback)
+
+<br>
+
+<b>Installation</b>
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/kumoruBaka/Maou-bot.git
-   cd Maou-bot
-   ```
+```bash
+git clone https://github.com/kumoruBaka/Maou-bot.git
+cd Maou-bot
+```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. Create a `.env` file in the root directory and add your Discord bot token:
-   ```env
-   TOKEN=your_discord_bot_token_here
-   ```
+3. Create a `.env` file and add your token:
+```env
+TOKEN=your_discord_bot_token_here
+```
 
-## Usage
+<br>
+
+<b>Usage</b>
 
 Start the bot:
 ```bash
@@ -40,7 +48,9 @@ npm start
 ```
 The web dashboard will be available at `http://localhost:3212`.
 
-## Commands
+<br>
+
+<b>Commands</b>
 
 Prefix: `mao.`
 
@@ -54,5 +64,8 @@ Prefix: `mao.`
 - `mao.lang <ID/EN/JP>` - Change bot language
 - `mao.help` - Show all available commands
 
-## License
+<br>
+
+<b>License</b>
+
 [MIT](LICENSE)
