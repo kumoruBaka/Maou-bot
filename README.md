@@ -46,7 +46,7 @@ Start the bot:
 ```bash
 npm start
 ```
-The web dashboard will be available at `http://localhost:3212`.
+And done, ready to use
 
 <br>
 
