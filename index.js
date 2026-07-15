@@ -3,7 +3,6 @@ const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const { getVoiceConnection } = require('@discordjs/voice');
 const fs = require('fs');
 const path = require('path');
-const express = require('express');
 const fetch = require('node-fetch');
 
 // Start listen.moe WebSocket
@@ -61,26 +60,6 @@ client.on('guildDelete', guild => {
         ],
         timestamp: new Date().toISOString()
     });
-});
-
-// Web Server Setup
-const app = express();
-const PORT = 3212;
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/api/status', (req, res) => {
-    res.json({
-        status: 'online',
-        ping: client.ws.ping,
-        guilds: client.guilds.cache.size,
-        users: client.users.cache.size,
-        currentSong: listenMoe.getCurrentSong()
-    });
-});
-
-app.listen(PORT, () => {
-    console.log(`Web server berjalan di http://localhost:${PORT}`);
 });
 
 // Crash handler supaya bot tidak nyangkut di voice channel

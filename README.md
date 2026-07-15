@@ -1,7 +1,7 @@
 <h1>Maou-bot</h1>
 
 <sub><b>A simple and lightweight Discord music bot</b><br>
-Featuring YouTube/SoundCloud playback, 24/7 JPOP radio, and a web dashboard.</sub>
+Featuring YouTube/SoundCloud playback and 24/7 JPOP radio.</sub>
 
 <br><br>
 
@@ -9,7 +9,6 @@ Featuring YouTube/SoundCloud playback, 24/7 JPOP radio, and a web dashboard.</su
 -  Play music from YouTube and SoundCloud
 -  24/7 JPOP Radio streaming via listen.moe
 -  Multi-language support (English, Indonesian, Japanese)
--  Built-in web dashboard for bot status
 -  Session ownership system
 
 <br>
