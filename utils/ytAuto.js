@@ -57,9 +57,13 @@ async function getAutoRecommendation(currentVideoUrl, genre = 'j-pop') {
 
             const hours = parseInt(match[1] || 0);
             const minutes = parseInt(match[2] || 0);
+            const seconds = parseInt(match[3] || 0);
             
             // Filter max 10 minutes
             if (hours > 0 || minutes > 10) continue;
+
+            // Filter shorts (<= 60 seconds)
+            if (hours === 0 && minutes === 0 && seconds <= 60) continue;
 
             return `https://www.youtube.com/watch?v=${vidId}`;
         }
