@@ -104,6 +104,7 @@ Prefix: `mao.`
 - `mao.skip` - Skip the current song
 - `mao.pause` / `mao.resume` - Pause or resume playback
 - `mao.loop` - Toggle loop for the current song
+- `mao.auto` - Toggle auto-recommendation for YouTube
 - `mao.queue` - Show the current music queue
 - `mao.lang <ID/EN/JP>` - Change bot language
 - `mao.help` - Show all available commands

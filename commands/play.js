@@ -3,6 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const play = require('play-dl');
 const fetch = require('node-fetch');
 const { scrapeYt, extractVideoId } = require('../utils/ytScraper');
+const { getAutoRecommendation } = require('../utils/ytAuto');
 const players = require('../playerStore');
 const { getMsg } = require('../utils/lang');
 
@@ -11,9 +12,27 @@ async function playNext(guildId, message) {
     if (!session) return;
 
     if (session.queue.length === 0 && !session.loop) {
-        message.channel.send(getMsg(guildId, 'queueEmpty'));
-        session.currentTrack = null;
-        return;
+        if (session.autoPlay && session.currentTrack && session.currentTrack.url.includes('youtube.com')) {
+            const nextUrl = await getAutoRecommendation(session.currentTrack.url);
+            if (nextUrl) {
+                const videoId = extractVideoId(nextUrl);
+                const scraped = await scrapeYt(videoId);
+                session.queue.push({
+                    title: scraped.title,
+                    url: scraped.url,
+                    thumbnail: scraped.thumbnail,
+                    isScraped: true
+                });
+            } else {
+                message.channel.send(getMsg(guildId, 'queueEmpty'));
+                session.currentTrack = null;
+                return;
+            }
+        } else {
+            message.channel.send(getMsg(guildId, 'queueEmpty'));
+            session.currentTrack = null;
+            return;
+        }
     }
 
     let track;
@@ -85,6 +104,7 @@ module.exports = {
                 ownerId: message.author.id,
                 queue: [],
                 loop: false,
+                autoPlay: false,
                 currentTrack: null,
                 isRadio: false
             };

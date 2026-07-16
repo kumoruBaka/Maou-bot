@@ -23,7 +23,9 @@ const dict = {
         queueEmptyList: 'Hmph! Antreannya kosong melompong! 🕸️',
         moved: 'Fufufu~ Maou-sama berpindah ke channel barumu! 🦇✨',
         ownerMoved: 'Fufufu~ Hak kepemilikan dipindahkan ke <@{newOwnerId}>! Jangan kecewakan Maou-sama! 👑✨',
-        ownerMoveError: 'Hmph! Tag orang yang ingin kamu jadikan pemilik baru! 💢'
+        ownerMoveError: 'Hmph! Tag orang yang ingin kamu jadikan pemilik baru! 💢',
+        autoOn: 'Fufufu~ Sihir rekomendasi otomatis diaktifkan! Maou-sama akan mencarikan lagu selanjutnya! 🔮✨',
+        autoOff: 'Fufufu~ Sihir rekomendasi otomatis dimatikan! 🛑✨'
     },
     EN: {
         noVoice: 'Hmph! You are not even in a voice channel, how dare you summon Maou-sama! 💢',
@@ -47,7 +49,9 @@ const dict = {
         queueEmptyList: 'Hmph! The queue is completely empty! 🕸️',
         moved: 'Fufufu~ Maou-sama has moved to your new channel! 🦇✨',
         ownerMoved: 'Fufufu~ Ownership transferred to <@{newOwnerId}>! Don\'t disappoint Maou-sama! 👑✨',
-        ownerMoveError: 'Hmph! Tag the person you want to make the new owner! 💢'
+        ownerMoveError: 'Hmph! Tag the person you want to make the new owner! 💢',
+        autoOn: 'Fufufu~ Auto-recommendation magic activated! Maou-sama will find the next song! 🔮✨',
+        autoOff: 'Fufufu~ Auto-recommendation magic deactivated! 🛑✨'
     },
     JP: {
         noVoice: 'ふん！自分はボイスチャンネルにいないのに、魔王様を呼び出すなんて！ 💢',
@@ -71,7 +75,9 @@ const dict = {
         queueEmptyList: 'ふん！キューはすっからかんよ！ 🕸️',
         moved: 'ふふふ〜 魔王様が新しいチャンネルに移動したわ！ 🦇✨',
         ownerMoved: 'ふふふ〜 所有権を<@{newOwnerId}>に譲渡したわ！魔王様を失望させないでね！ 👑✨',
-        ownerMoveError: 'ふん！新しい所有者にしたい人をタグ付けしなさい！ 💢'
+        ownerMoveError: 'ふん！新しい所有者にしたい人をタグ付けしなさい！ 💢',
+        autoOn: 'ふふふ〜 自動おすすめ魔法を有効にしたわ！魔王様が次の曲を探してあげる！ 🔮✨',
+        autoOff: 'ふふふ〜 自動おすすめ魔法を無効にしたわ！ 🛑✨'
     }
 };
 
