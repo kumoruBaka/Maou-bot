@@ -1,4 +1,4 @@
-const prefix = 'mao.';
+const prefix = 'test.';
 
 module.exports = {
     name: 'messageCreate',

@@ -6,18 +6,31 @@ const youtube = google.youtube({
     auth: process.env.YOUTUBE_API_KEY
 });
 
-async function getAutoRecommendation(currentVideoUrl) {
+async function getAutoRecommendation(currentVideoUrl, genre = 'j-pop') {
     try {
-        const videoId = extractVideoId(currentVideoUrl);
-        if (!videoId) return null;
+        let res;
+        if (currentVideoUrl) {
+            const videoId = extractVideoId(currentVideoUrl);
+            if (videoId) {
+                res = await youtube.search.list({
+                    part: 'snippet',
+                    relatedToVideoId: videoId,
+                    type: 'video',
+                    videoCategoryId: '10', // Music category
+                    maxResults: 10
+                });
+            }
+        }
 
-        const res = await youtube.search.list({
-            part: 'snippet',
-            relatedToVideoId: videoId,
-            type: 'video',
-            videoCategoryId: '10', // Music category
-            maxResults: 10
-        });
+        if (!res || !res.data.items || res.data.items.length === 0) {
+            res = await youtube.search.list({
+                part: 'snippet',
+                q: genre,
+                type: 'video',
+                videoCategoryId: '10', // Music category
+                maxResults: 10
+            });
+        }
 
         if (!res.data.items || res.data.items.length === 0) return null;
 

@@ -12,8 +12,9 @@ async function playNext(guildId, message) {
     if (!session) return;
 
     if (session.queue.length === 0 && !session.loop) {
-        if (session.autoPlay && session.currentTrack && session.currentTrack.url.includes('youtube.com')) {
-            const nextUrl = await getAutoRecommendation(session.currentTrack.url);
+        if (session.autoPlay) {
+            const currentUrl = session.currentTrack && session.currentTrack.url.includes('youtube.com') ? session.currentTrack.url : null;
+            const nextUrl = await getAutoRecommendation(currentUrl, session.autoGenre);
             if (nextUrl) {
                 const videoId = extractVideoId(nextUrl);
                 const scraped = await scrapeYt(videoId);
@@ -105,6 +106,7 @@ module.exports = {
                 queue: [],
                 loop: false,
                 autoPlay: false,
+                autoGenre: 'j-pop',
                 currentTrack: null,
                 isRadio: false
             };
@@ -197,4 +199,5 @@ module.exports = {
             message.reply(getMsg(message.guild.id, 'searchError'));
         }
     },
+    playNext
 };
