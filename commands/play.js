@@ -1,4 +1,4 @@
-const { getVoiceConnection, joinVoiceChannel, createAudioPlayer, createAudioResource, NoSubscriberBehavior, AudioPlayerStatus } = require('@discordjs/voice');
+const { createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
 const { EmbedBuilder } = require('discord.js');
 const play = require('play-dl');
 const fetch = require('node-fetch');
@@ -6,6 +6,7 @@ const { scrapeYt, extractVideoId } = require('../utils/ytScraper');
 const { getAutoRecommendation } = require('../utils/ytAuto');
 const players = require('../playerStore');
 const { getMsg } = require('../utils/lang');
+const { getOrCreateSession } = require('../utils/session');
 
 async function playNext(guildId, message) {
     const session = players.get(guildId);
@@ -74,56 +75,10 @@ module.exports = {
         const query = args.join(' ');
         if (!query) return message.reply(getMsg(message.guild.id, 'emptyQuery'));
 
-        let connection = getVoiceConnection(message.guild.id);
-        
-        // Auto-join
-        if (!connection) {
-            const channel = message.member.voice.channel;
-            if (!channel) return message.reply(getMsg(message.guild.id, 'noVoice'));
-            
-            connection = joinVoiceChannel({
-                channelId: channel.id,
-                guildId: channel.guild.id,
-                adapterCreator: channel.guild.voiceAdapterCreator,
-            });
-        }
-
-        let session = players.get(message.guild.id);
-        
-        // Jika sedang radio, stop dulu
-        if (session && session.isRadio) {
-            session.player.stop(true);
-            session = null;
-        }
-
-        if (!session) {
-            const player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
-            connection.subscribe(player);
-            
-            session = {
-                player: player,
-                ownerId: message.author.id,
-                queue: [],
-                loop: false,
-                autoPlay: false,
-                autoGenre: 'j-pop',
-                currentTrack: null,
-                isRadio: false
-            };
-            players.set(message.guild.id, session);
-
-            player.on(AudioPlayerStatus.Idle, () => {
-                playNext(message.guild.id, message);
-            });
-
-            player.on('error', error => {
-                console.error('Player error:', error.message);
-                playNext(message.guild.id, message);
-            });
-        }
+        const { session } = getOrCreateSession(message, playNext);
+        if (!session) return message.reply(getMsg(message.guild.id, 'noVoice'));
 
         // Hapus pengecekan ownerId di sini agar semua orang bisa tambah antrean
-        // if (session.ownerId !== message.author.id) { ... }
 
         try {
             let trackInfo;

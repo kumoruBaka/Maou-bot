@@ -1,6 +1,7 @@
 const { getVoiceConnection } = require('@discordjs/voice');
 const players = require('../playerStore');
 const { getMsg } = require('../utils/lang');
+const { isInSameVoiceChannel } = require('../utils/session');
 
 module.exports = {
     name: 'leave',
@@ -12,6 +13,7 @@ module.exports = {
         if (session && session.ownerId !== message.author.id) {
             return message.reply(getMsg(message.guild.id, 'notOwner', { ownerId: session.ownerId }));
         }
+        if (!isInSameVoiceChannel(message)) return message.reply('Hmph! Kamu tidak ada di voice channel yang sama dengan Maou-sama! 💢');
 
         // Disconnect
         connection.destroy();
