@@ -118,6 +118,12 @@ module.exports = {
         if (!session) return message.reply(getMsg(guildId, 'noVoice'));
 
         try {
+            // ── Deteksi playlist YouTube ──────────────────────────────────────
+            if (isYouTubePlaylist(query)) {
+                await resolvePlaylist(query, guildId, message, session);
+                return;
+            }
+
             const trackInfo = await resolveQuery(query, guildId, message);
             if (!trackInfo) return; // resolveQuery sudah kirim reply bila gagal
 
@@ -142,6 +148,52 @@ module.exports = {
 };
 
 // ─── Query Resolver ───────────────────────────────────────────────────────────
+
+function isYouTubePlaylist(query) {
+    try {
+        const url = new URL(query);
+        return (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be'))
+            && url.searchParams.has('list');
+    } catch { return false; }
+}
+
+/**
+ * Resolve YouTube playlist URL — push semua track ke session.queue (max 50).
+ * Langsung mulai putar bila player idle.
+ */
+async function resolvePlaylist(query, guildId, message, session) {
+    try {
+        const playlist = await play.playlist_info(query, { incomplete: true });
+        const allVideos = await playlist.all_videos();
+        const videos = allVideos.slice(0, 50); // ponytail: hard cap 50, tambah config bila perlu
+
+        if (videos.length === 0) {
+            return message.reply(getMsg(guildId, 'notFound'));
+        }
+
+        let added = 0;
+        for (const video of videos) {
+            if (video.durationInSec <= 0) continue; // skip live stream
+            session.queue.push({
+                title: video.title,
+                url: video.url,
+                thumbnail: video.thumbnails?.[0]?.url || null,
+                isScraped: false,
+                originalUrl: video.url
+            });
+            added++;
+        }
+
+        message.reply(getMsg(guildId, 'playlistAdded', { count: added, title: playlist.title || 'Playlist' }));
+
+        if (session.player.state.status === AudioPlayerStatus.Idle) {
+            playNext(guildId, message);
+        }
+    } catch (err) {
+        console.error(`[play] Playlist resolve gagal: ${err.message}`);
+        message.reply(getMsg(guildId, 'searchError') + `\n> *${err.message}*`);
+    }
+}
 
 /**
  * Resolve query pengguna (URL/judul) ke TrackInfo.

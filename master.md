@@ -335,13 +335,13 @@ resource.volume.setVolume(0.5); // 50%
 ---
 
 ### SPEC-06 — Fitur Tambahan: Playlist YouTube
-**Status:** `pending`  
+**Status:** `done` ✅  
 **Prioritas:** Rendah  
 
 **Requirements:**
-- [ ] `mao.play <youtube-playlist-url>` menambah semua lagu ke antrian
-- [ ] Batasi maksimal 50 lagu per playlist untuk mencegah abuse
-- [ ] Tampilkan konfirmasi: "X lagu dari playlist Y ditambahkan"
+- [x] `mao.play <youtube-playlist-url>` menambah semua lagu ke antrian
+- [x] Batasi maksimal 50 lagu per playlist untuk mencegah abuse
+- [x] Tampilkan konfirmasi: "X lagu dari playlist Y ditambahkan"
 
 **Technical Note:**
 `play-dl` mendukung `playlist_info()` untuk YouTube playlist.

@@ -27,7 +27,8 @@ const dict = {
         autoOn: 'Fufufu~ Sihir rekomendasi otomatis diaktifkan! Maou-sama akan mencarikan lagu selanjutnya! 🔮✨',
         autoOff: 'Fufufu~ Sihir rekomendasi otomatis dimatikan! 🛑✨',
         volumeSet: 'Fufufu~ Volume diatur ke **{volume}%**! 🔊✨',
-        volumeInvalid: 'Hmph! Volume harus antara 1 sampai 100! 💢' {
+        volumeInvalid: 'Hmph! Volume harus antara 1 sampai 100! 💢',
+        playlistAdded: 'Fufufu~ **{count}** lagu dari playlist **{title}** telah ditambahkan ke antrean sihirku! 📜✨' {
         noVoice: 'Hmph! You are not even in a voice channel, how dare you summon Maou-sama! 💢',
         emptyQuery: 'Hah? Do you want Maou-sama to play the wind? Give me a title or URL! 😤',
         queueEmpty: 'Fufufu~ The queue is empty! Silence reigns once more. 🤫✨',
@@ -53,7 +54,8 @@ const dict = {
         autoOn: 'Fufufu~ Auto-recommendation magic activated! Maou-sama will find the next song! 🔮✨',
         autoOff: 'Fufufu~ Auto-recommendation magic deactivated! 🛑✨',
         volumeSet: 'Fufufu~ Volume set to **{volume}%**! 🔊✨',
-        volumeInvalid: 'Hmph! Volume must be between 1 and 100! 💢' {
+        volumeInvalid: 'Hmph! Volume must be between 1 and 100! 💢',
+        playlistAdded: 'Fufufu~ **{count}** songs from playlist **{title}** have been added to my magical queue! 📜✨' {
         noVoice: 'ふん！自分はボイスチャンネルにいないのに、魔王様を呼び出すなんて！ 💢',
         emptyQuery: 'はあ？魔王様に風を再生しろと？タイトルかURLを教えなさい！ 😤',
         queueEmpty: 'ふふふ〜 キューが空になったわ！再び静寂が支配する。 🤫✨',
@@ -79,7 +81,8 @@ const dict = {
         autoOn: 'ふふふ〜 自動おすすめ魔法を有効にしたわ！魔王様が次の曲を探してあげる！ 🔮✨',
         autoOff: 'ふふふ〜 自動おすすめ魔法を無効にしたわ！ 🛑✨',
         volumeSet: 'ふふふ〜 ボリュームを**{volume}%**に設定したわ！ 🔊✨',
-        volumeInvalid: 'ふん！ボリュームは1から100の間でなければならないわ！ 💢'
+        volumeInvalid: 'ふん！ボリュームは1から100の間でなければならないわ！ 💢',
+        playlistAdded: 'ふふふ〜 プレイリスト**{title}**から**{count}**曲を魔法のキューに追加したわ！ 📜✨'
 
 function getMsg(guildId, key, params = {}) {
     const lang = langs.get(guildId) || 'ID';
