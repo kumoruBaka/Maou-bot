@@ -352,14 +352,28 @@ resource.volume.setVolume(0.5); // 50%
 **Status:** `pending`  
 **Prioritas:** Rendah (Long-term)  
 
+> ⚠️ **Keputusan Arsitektur:** Prefix commands `mao.` **tetap dipertahankan** sebagai sistem utama dan tidak dihapus. Slash commands ditambahkan sebagai lapisan tambahan (dual-mode), bukan pengganti.
+
 **Requirements:**
-- [ ] Migrasi dari prefix commands ke Discord Slash Commands (`/`)
+- [ ] Tambah slash commands sebagai alternatif di samping prefix `mao.` (bukan menggantikan)
 - [ ] Daftarkan commands via `REST` API Discord saat bot startup
-- [ ] Pertahankan backward compatibility prefix selama transisi
+- [ ] Prefix `mao.` tetap berfungsi penuh setelah migrasi
+- [ ] Slash commands dan prefix commands berbagi logika yang sama (tidak duplikasi)
 
 **Technical Note:**
 - Gunakan `discord.js` `SlashCommandBuilder` dan `interactionCreate` event
-- Setiap command perlu diubah dari `execute(message, args)` ke `execute(interaction)`
+- Pisahkan logika bisnis ke fungsi terpisah yang bisa dipanggil dari keduanya
+- Contoh pola dual-mode:
+```js
+// commands/play.js
+async function executeLogic(guildId, query, channel, member) { ... }
+
+// Prefix handler
+execute(message, args) { executeLogic(message.guild.id, args.join(' '), message.channel, message.member); }
+
+// Slash handler  
+executeSlash(interaction) { executeLogic(interaction.guildId, interaction.options.getString('query'), interaction.channel, interaction.member); }
+```
 
 
 ---
