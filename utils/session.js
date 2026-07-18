@@ -42,6 +42,7 @@ function getOrCreateSession(message, playNextFn) {
         autoGenre: 'j-pop',
         currentTrack: null,
         isRadio: false,
+        volume: 100,
     };
     players.set(guildId, session);
 

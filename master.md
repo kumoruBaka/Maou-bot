@@ -220,8 +220,8 @@ Setiap guild memiliki satu session yang disimpan di `playerStore` (Map):
 4. **`autoInfoChannels` tidak persisten** — di-reset setiap bot restart, semua user harus toggle ulang.
 5. **`langStore` tidak persisten** — preferensi bahasa per-guild hilang saat restart.
 6. **`playerStore` in-memory only** — queue hilang saat bot restart.
-7. **`ytScraper.js` bergantung pada 3rd-party** (`epsilon.epsiloncloud.org`) — tidak ada fallback bila API ini down.
-8. **`relatedToVideoId`** di YouTube API v3 sudah deprecated — `ytAuto.js` perlu migrasi ke endpoint lain.
+7. ~~**`ytScraper.js` bergantung pada 3rd-party** (`epsilon.epsiloncloud.org`) — tidak ada fallback bila API ini down.~~ ✅ *Diselesaikan SPEC-04: retry 3x + fallback ke play-dl.*
+8. ~~**`relatedToVideoId`** di YouTube API v3 sudah deprecated — `ytAuto.js` perlu migrasi ke endpoint lain.~~ ✅ *Diselesaikan SPEC-04: migrasi ke pencarian berbasis judul/channel.*
 
 ### 🟢 Minor
 9. **`info.auto.js` masih hardcode bahasa Indonesia** — tidak menggunakan sistem `getMsg()`.
@@ -296,29 +296,34 @@ module.exports = { createPlayerSession };
 ---
 
 ### SPEC-04 — Error Handling & Fallback Audio
-**Status:** `pending`  
+**Status:** `✅ selesai` — Juli 2026  
 **Prioritas:** Medium  
 
 **Requirements:**
-- [ ] `ytScraper.js` memiliki retry mechanism (max 3x) sebelum throw error
-- [ ] Fallback ke `play-dl` bila `ytScraper` gagal
-- [ ] `ytAuto.js` handle deprecated `relatedToVideoId` — migrasi ke pencarian berbasis judul/artist
-- [ ] Error message lebih informatif (jenis error, bukan hanya pesan generik)
+- [x] `ytScraper.js` memiliki retry mechanism (max 3x) sebelum throw error
+- [x] Fallback ke `play-dl` bila `ytScraper` gagal
+- [x] `ytAuto.js` handle deprecated `relatedToVideoId` — migrasi ke pencarian berbasis judul/artist
+- [x] Error message lebih informatif (jenis error, bukan hanya pesan generik)
 
 **Acceptance Criteria:**
-- Bot tidak crash bila `ytScraper` gagal; mencoba fallback dan lapor ke channel
-- `ytAuto.js` tetap berfungsi meski `relatedToVideoId` tidak didukung
+- Bot tidak crash bila `ytScraper` gagal; mencoba fallback dan lapor ke channel ✅
+- `ytAuto.js` tetap berfungsi meski `relatedToVideoId` tidak didukung ✅
+
+**Perubahan:**
+- `utils/ytScraper.js` — pisah `scrapeYtOnce()` + `scrapeYt()` dengan retry 3x (backoff 1.5s/3s) + `scrapeYtFallback()` via play-dl. Error message sertakan HTTP status & API error code.
+- `utils/ytAuto.js` — hapus `relatedToVideoId`. Strategi baru: (1) bangun query dari judul+channel video saat ini (noise filtering), (2) fallback ke genre. Guard `YOUTUBE_API_KEY` tidak ada.
+- `commands/play.js` — pisah `resolveQuery()` ke fungsi tersendiri, semua error path sertakan `error.message` di reply user, `isScraped` mengikuti return value scraper (dinamis saat fallback), simpan `originalUrl` di TrackInfo untuk keperluan rekomendasi auto-play.
 
 ---
 
 ### SPEC-05 — Fitur Tambahan: Volume Control
-**Status:** `pending`  
+**Status:** `done` ✅  
 **Prioritas:** Rendah  
 
 **Requirements:**
-- [ ] Command `mao.volume <1-100>` — atur volume output audio
-- [ ] Simpan volume per-session di playerStore
-- [ ] Hanya owner yang bisa mengubah volume
+- [x] Command `mao.volume <1-100>` — atur volume output audio
+- [x] Simpan volume per-session di playerStore
+- [x] Hanya owner yang bisa mengubah volume
 
 **Technical Note:**
 `@discordjs/voice` memerlukan `InlineVolume` pada `createAudioResource`:

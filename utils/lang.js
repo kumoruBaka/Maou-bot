@@ -25,9 +25,9 @@ const dict = {
         ownerMoved: 'Fufufu~ Hak kepemilikan dipindahkan ke <@{newOwnerId}>! Jangan kecewakan Maou-sama! 👑✨',
         ownerMoveError: 'Hmph! Tag orang yang ingin kamu jadikan pemilik baru! 💢',
         autoOn: 'Fufufu~ Sihir rekomendasi otomatis diaktifkan! Maou-sama akan mencarikan lagu selanjutnya! 🔮✨',
-        autoOff: 'Fufufu~ Sihir rekomendasi otomatis dimatikan! 🛑✨'
-    },
-    EN: {
+        autoOff: 'Fufufu~ Sihir rekomendasi otomatis dimatikan! 🛑✨',
+        volumeSet: 'Fufufu~ Volume diatur ke **{volume}%**! 🔊✨',
+        volumeInvalid: 'Hmph! Volume harus antara 1 sampai 100! 💢' {
         noVoice: 'Hmph! You are not even in a voice channel, how dare you summon Maou-sama! 💢',
         emptyQuery: 'Hah? Do you want Maou-sama to play the wind? Give me a title or URL! 😤',
         queueEmpty: 'Fufufu~ The queue is empty! Silence reigns once more. 🤫✨',
@@ -51,9 +51,9 @@ const dict = {
         ownerMoved: 'Fufufu~ Ownership transferred to <@{newOwnerId}>! Don\'t disappoint Maou-sama! 👑✨',
         ownerMoveError: 'Hmph! Tag the person you want to make the new owner! 💢',
         autoOn: 'Fufufu~ Auto-recommendation magic activated! Maou-sama will find the next song! 🔮✨',
-        autoOff: 'Fufufu~ Auto-recommendation magic deactivated! 🛑✨'
-    },
-    JP: {
+        autoOff: 'Fufufu~ Auto-recommendation magic deactivated! 🛑✨',
+        volumeSet: 'Fufufu~ Volume set to **{volume}%**! 🔊✨',
+        volumeInvalid: 'Hmph! Volume must be between 1 and 100! 💢' {
         noVoice: 'ふん！自分はボイスチャンネルにいないのに、魔王様を呼び出すなんて！ 💢',
         emptyQuery: 'はあ？魔王様に風を再生しろと？タイトルかURLを教えなさい！ 😤',
         queueEmpty: 'ふふふ〜 キューが空になったわ！再び静寂が支配する。 🤫✨',
@@ -77,9 +77,9 @@ const dict = {
         ownerMoved: 'ふふふ〜 所有権を<@{newOwnerId}>に譲渡したわ！魔王様を失望させないでね！ 👑✨',
         ownerMoveError: 'ふん！新しい所有者にしたい人をタグ付けしなさい！ 💢',
         autoOn: 'ふふふ〜 自動おすすめ魔法を有効にしたわ！魔王様が次の曲を探してあげる！ 🔮✨',
-        autoOff: 'ふふふ〜 自動おすすめ魔法を無効にしたわ！ 🛑✨'
-    }
-};
+        autoOff: 'ふふふ〜 自動おすすめ魔法を無効にしたわ！ 🛑✨',
+        volumeSet: 'ふふふ〜 ボリュームを**{volume}%**に設定したわ！ 🔊✨',
+        volumeInvalid: 'ふん！ボリュームは1から100の間でなければならないわ！ 💢'
 
 function getMsg(guildId, key, params = {}) {
     const lang = langs.get(guildId) || 'ID';
