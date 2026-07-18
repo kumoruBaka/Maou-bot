@@ -21,7 +21,7 @@ const client = new Client({
 listenMoe.setClient(client);
 
 // Webhook URL
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1526876596395315200/d51eEj7tES-CdzMKe0hcfmlxrL6vxT-uCx_Wk3BQeGPqoc17YsOEBa6b7UJ55n76ZZy9';
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 async function sendWebhook(content, embed) {
     try {

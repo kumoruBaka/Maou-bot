@@ -1,4 +1,4 @@
-const prefix = 'test.';
+const prefix = process.env.PREFIX || 'mao.';
 
 module.exports = {
     name: 'messageCreate',

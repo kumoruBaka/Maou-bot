@@ -3,7 +3,22 @@ const { EmbedBuilder, ActivityType } = require('discord.js');
 
 let currentSong = null;
 let ws = null;
-let autoInfoChannels = new Set(); // Set of channel IDs
+const store = require('./storage/store');
+
+// autoInfoChannels di-load dari disk saat startup; key per-guild disimpan di guilds.json
+// ponytail: Set global ini tidak per-guild — upgrade ke Map<guildId, Set> bila perlu isolasi
+const _savedChannels = (() => {
+    try {
+        const fs = require('fs'), path = require('path');
+        const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'storage/guilds.json'), 'utf8'));
+        const ids = [];
+        for (const g of Object.values(data)) {
+            if (Array.isArray(g.autoInfoChannels)) ids.push(...g.autoInfoChannels);
+        }
+        return ids;
+    } catch { return []; }
+})();
+let autoInfoChannels = new Set(_savedChannels); // Set of channel IDs
 let discordClient = null;
 
 function updateBotPresence(song) {
@@ -102,12 +117,20 @@ connect();
 module.exports = {
     getCurrentSong: () => currentSong,
     setClient: (client) => { discordClient = client; },
-    toggleAutoInfo: (channelId) => {
+    toggleAutoInfo: (channelId, guildId) => {
         if (autoInfoChannels.has(channelId)) {
             autoInfoChannels.delete(channelId);
+            if (guildId) {
+                const cur = store.get(guildId, 'autoInfoChannels', []);
+                store.set(guildId, 'autoInfoChannels', cur.filter(id => id !== channelId));
+            }
             return false; // Dimatikan
         } else {
             autoInfoChannels.add(channelId);
+            if (guildId) {
+                const cur = store.get(guildId, 'autoInfoChannels', []);
+                if (!cur.includes(channelId)) store.set(guildId, 'autoInfoChannels', [...cur, channelId]);
+            }
             return true; // Dinyalakan
         }
     }
