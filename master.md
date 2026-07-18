@@ -239,14 +239,14 @@ Berikut adalah daftar fitur/perbaikan yang dapat dikerjakan dengan pendekatan Sp
 ---
 
 ### SPEC-01 — Perbaikan Konfigurasi & Keamanan
-**Status:** `pending`  
+**Status:** `done` ✅  
 **Prioritas:** Kritis  
 
 **Requirements:**
-- [ ] Prefix bot dipindahkan ke `.env` sebagai `PREFIX=mao.`
-- [ ] Webhook URL dipindahkan ke `.env` sebagai `WEBHOOK_URL`
-- [ ] `.env.example` diperbarui dengan semua variabel yang dibutuhkan
-- [ ] `messageCreate.js` membaca prefix dari `process.env.PREFIX`
+- [x] Prefix bot dipindahkan ke `.env` sebagai `PREFIX=mao.`
+- [x] Webhook URL dipindahkan ke `.env` sebagai `WEBHOOK_URL`
+- [x] `.env.example` diperbarui dengan semua variabel yang dibutuhkan
+- [x] `messageCreate.js` membaca prefix dari `process.env.PREFIX`
 
 **Acceptance Criteria:**
 - Bot berjalan dengan prefix `mao.` tanpa mengubah source code
@@ -256,12 +256,12 @@ Berikut adalah daftar fitur/perbaikan yang dapat dikerjakan dengan pendekatan Sp
 ---
 
 ### SPEC-02 — Persistence Layer
-**Status:** `pending`  
+**Status:** `done` ✅  
 **Prioritas:** Tinggi  
 
 **Requirements:**
-- [ ] Preferensi bahasa per-guild persisten (survive restart) menggunakan file JSON atau SQLite
-- [ ] `autoInfoChannels` persisten per-guild
+- [x] Preferensi bahasa per-guild persisten (survive restart) menggunakan file JSON atau SQLite
+- [x] `autoInfoChannels` persisten per-guild
 - [ ] Opsional: simpan queue saat shutdown graceful
 
 **Design:**
@@ -278,13 +278,13 @@ atau gunakan `better-sqlite3` untuk relational storage.
 ---
 
 ### SPEC-03 — Refactor Command Handler
-**Status:** `pending`  
+**Status:** `done` ✅  
 **Prioritas:** Medium  
 
 **Requirements:**
-- [ ] Extract `createPlayerSession()` helper dari `play.js` dan `auto.js` (DRY)
-- [ ] Command name dengan titik (`.`) dihandle dengan benar di parser
-- [ ] Tambah validasi: user harus berada di VC yang sama dengan bot untuk command owner
+- [x] Extract `createPlayerSession()` helper dari `play.js` dan `auto.js` (DRY)
+- [x] Command name dengan titik (`.`) dihandle dengan benar di parser
+- [x] Tambah validasi: user harus berada di VC yang sama dengan bot untuk command owner
 
 **Design:**
 ```js
