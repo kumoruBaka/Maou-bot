@@ -1,21 +1,27 @@
+const { SlashCommandBuilder } = require('discord.js');
 const players = require('../playerStore');
 const { getMsg } = require('../utils/lang');
 const { isInSameVoiceChannel } = require('../utils/session');
+const { Responder } = require('../utils/responder');
+
+function executeLogic(r) {
+    const guildId = r.guildId;
+    const session = players.get(guildId);
+    if (!session) return r.reply(getMsg(guildId, 'queueEmptyList'));
+    if (session.ownerId !== r.userId) return r.reply(getMsg(guildId, 'notOwner', { ownerId: session.ownerId }));
+    if (!isInSameVoiceChannel(r)) return r.reply('Hmph! Kamu tidak ada di voice channel yang sama dengan Maou-sama! 💢');
+    if (session.isRadio) return r.reply('Bodoh! Ini siaran radio langsung, tidak bisa diulang! 💢');
+
+    session.loop = !session.loop;
+    r.reply(getMsg(guildId, session.loop ? 'loopOn' : 'loopOff'));
+}
 
 module.exports = {
     name: 'loop',
-    execute(message) {
-        const session = players.get(message.guild.id);
-        if (!session) return message.reply(getMsg(message.guild.id, 'queueEmptyList'));
-        if (session.ownerId !== message.author.id) return message.reply(getMsg(message.guild.id, 'notOwner', { ownerId: session.ownerId }));
-        if (!isInSameVoiceChannel(message)) return message.reply('Hmph! Kamu tidak ada di voice channel yang sama dengan Maou-sama! 💢');
-        if (session.isRadio) return message.reply('Bodoh! Ini siaran radio langsung, tidak bisa diulang! 💢');
+    data: new SlashCommandBuilder()
+        .setName('loop')
+        .setDescription('Aktifkan atau matikan pengulangan lagu saat ini'),
 
-        session.loop = !session.loop;
-        if (session.loop) {
-            message.reply(getMsg(message.guild.id, 'loopOn'));
-        } else {
-            message.reply(getMsg(message.guild.id, 'loopOff'));
-        }
-    },
+    execute(message) { executeLogic(new Responder(message)); },
+    executeSlash(interaction) { executeLogic(new Responder(interaction)); },
 };

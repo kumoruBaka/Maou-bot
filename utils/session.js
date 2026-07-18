@@ -1,20 +1,24 @@
-const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayerStatus } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, NoSubscriberBehavior, AudioPlayerStatus, getVoiceConnection } = require('@discordjs/voice');
 const players = require('../playerStore');
 
 /**
  * Buat atau kembalikan session yang sudah ada untuk guild.
- * Jika session baru dibuat, player di-subscribe ke connection.
- * @param {import('discord.js').Message} message
- * @param {Function} playNextFn - fungsi playNext(guildId, message) dari caller
- * @returns {{ session: object, isNew: boolean }}
+ * Menerima Message (prefix) atau Responder (dual-mode).
+ *
+ * @param {import('discord.js').Message | import('./responder').Responder} source
+ * @param {Function} playNextFn - fungsi playNext(guildId, responder)
+ * @returns {{ session: object|null, connection: object|null, isNew: boolean }}
  */
-function getOrCreateSession(message, playNextFn) {
-    const guildId = message.guild.id;
+function getOrCreateSession(source, playNextFn) {
+    // Normalise: Responder expose guildId, userId, member; Message expose guild, author, member
+    const guildId   = source.guildId  ?? source.guild?.id;
+    const userId    = source.userId   ?? source.author?.id;
+    const member    = source.member;
 
-    let connection = require('@discordjs/voice').getVoiceConnection(guildId);
+    let connection = getVoiceConnection(guildId);
     if (!connection) {
-        const channel = message.member.voice.channel;
-        if (!channel) return { session: null, isNew: false };
+        const channel = member?.voice?.channel;
+        if (!channel) return { session: null, connection: null, isNew: false };
         connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
@@ -35,21 +39,20 @@ function getOrCreateSession(message, playNextFn) {
 
     session = {
         player,
-        ownerId: message.author.id,
+        ownerId: userId,
         queue: [],
         loop: false,
         autoPlay: false,
         autoGenre: 'j-pop',
         currentTrack: null,
         isRadio: false,
-        volume: 100,
     };
     players.set(guildId, session);
 
-    player.on(AudioPlayerStatus.Idle, () => playNextFn(guildId, message));
+    player.on(AudioPlayerStatus.Idle, () => playNextFn(guildId, source));
     player.on('error', error => {
-        console.error('Player error:', error.message);
-        playNextFn(guildId, message);
+        console.error(`[session] Player error: ${error.message}`);
+        playNextFn(guildId, source);
     });
 
     return { session, connection, isNew: true };
@@ -57,14 +60,17 @@ function getOrCreateSession(message, playNextFn) {
 
 /**
  * Cek apakah user berada di VC yang sama dengan bot.
+ * Menerima Message atau Responder.
  * Return true bila bot tidak di VC (tidak perlu cek).
+ *
+ * @param {import('discord.js').Message | import('./responder').Responder} source
  */
-function isInSameVoiceChannel(message) {
-    const { getVoiceConnection } = require('@discordjs/voice');
-    const connection = getVoiceConnection(message.guild.id);
+function isInSameVoiceChannel(source) {
+    const guildId = source.guildId ?? source.guild?.id;
+    const connection = getVoiceConnection(guildId);
     if (!connection) return true;
     const botChannelId = connection.joinConfig.channelId;
-    return message.member.voice.channelId === botChannelId;
+    return source.member?.voice?.channelId === botChannelId;
 }
 
 module.exports = { getOrCreateSession, isInSameVoiceChannel };

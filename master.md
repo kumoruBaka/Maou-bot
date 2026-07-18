@@ -185,9 +185,11 @@ Setiap guild memiliki satu session yang disimpan di `playerStore` (Map):
 | Variabel | Wajib | Keterangan |
 |---|---|---|
 | `TOKEN` | ✅ | Discord bot token |
+| `CLIENT_ID` | ✅ (slash) | Discord Application ID — untuk registrasi slash commands. Jika kosong, diambil otomatis dari `client.user.id` saat ready. |
 | `YOUTUBE_API_KEY` | ✅ (untuk auto) | API key Google Cloud / YouTube Data API v3 |
-
-> `.env.example` saat ini hanya mendokumentasikan `TOKEN`. `YOUTUBE_API_KEY` perlu ditambahkan.
+| `PREFIX` | ❌ | Prefix command (default: `mao.`) |
+| `GUILD_ID` | ❌ | Guild ID untuk dev — slash deploy guild-scoped (instan). Kosongkan untuk global deploy. |
+| `WEBHOOK_URL` | ❌ | Discord Webhook URL untuk notifikasi join/leave |
 
 ---
 
@@ -195,8 +197,9 @@ Setiap guild memiliki satu session yang disimpan di `playerStore` (Map):
 
 | Event | File | Trigger |
 |---|---|---|
-| `clientReady` (once) | events/ready.js | Bot online — set activity ke "listen.moe" |
-| `messageCreate` | events/messageCreate.js | Setiap pesan — parse prefix `test.`, dispatch command |
+| `clientReady` (once) | events/ready.js | Bot online — set activity ke "listen.moe", trigger registerSlashCommands() |
+| `messageCreate` | events/messageCreate.js | Setiap pesan — parse prefix `mao.`, dispatch command |
+| `interactionCreate` | events/interactionCreate.js | Slash command dipanggil → dispatch ke `executeSlash()` |
 | `guildCreate` | index.js | Bot bergabung ke server baru → kirim webhook embed |
 | `guildDelete` | index.js | Bot dikeluarkan dari server → kirim webhook embed |
 | `AudioPlayerStatus.Idle` | play.js / auto.js | Player selesai → panggil `playNext()` |
@@ -212,9 +215,9 @@ Setiap guild memiliki satu session yang disimpan di `playerStore` (Map):
 ## 8. Known Issues & Technical Debt
 
 ### 🔴 Kritis
-1. **Prefix hardcode `test.`** di `messageCreate.js` — seharusnya `mao.` per dokumentasi help.js. Perlu diseragamkan atau dipindah ke `.env`.
-2. **Webhook URL exposed** di `index.js` — webhook Discord hardcode di source code, harus dipindah ke `.env`.
-3. **`YOUTUBE_API_KEY` tidak terdokumentasi** di `.env.example` — silent failure bila key tidak ada.
+1. ~~**Prefix hardcode `test.`** di `messageCreate.js`~~ ✅ *Diselesaikan SPEC-01: baca dari `process.env.PREFIX`, default `mao.`*
+2. ~~**Webhook URL exposed** di `index.js`~~ ✅ *Diselesaikan SPEC-01: pindah ke `process.env.WEBHOOK_URL`*
+3. ~~**`YOUTUBE_API_KEY` tidak terdokumentasi** di `.env.example`~~ ✅ *Diselesaikan SPEC-01 & SPEC-07: `.env.example` sekarang mendokumentasikan semua variabel*
 
 ### 🟡 Medium
 4. **`autoInfoChannels` tidak persisten** — di-reset setiap bot restart, semua user harus toggle ulang.
@@ -225,9 +228,9 @@ Setiap guild memiliki satu session yang disimpan di `playerStore` (Map):
 
 ### 🟢 Minor
 9. **`info.auto.js` masih hardcode bahasa Indonesia** — tidak menggunakan sistem `getMsg()`.
-10. **`stream.js`** memiliki debug `stateChange` listener yang tersisa di production.
-11. **`ownership.move` command name** mengandung titik — perlu validasi cara parsing di `messageCreate.js`.
-12. **`auto.js`** menduplikasi setup player dari `play.js` — bisa di-extract ke helper.
+10. ~~**`stream.js`** memiliki debug `stateChange` listener yang tersisa di production.~~ ✅ *Diselesaikan SPEC-07: listener debug dihapus.*
+11. ~~**`ownership.move` command name** mengandung titik — perlu validasi cara parsing di `messageCreate.js`.~~ ✅ *Diselesaikan SPEC-03 & SPEC-07: parser two-word di messageCreate.js, slashName `ownership-move` untuk slash.*
+12. ~~**`auto.js`** menduplikasi setup player dari `play.js`~~ ✅ *Diselesaikan SPEC-03: extract ke `utils/session.js`.*
 
 
 ---
@@ -349,31 +352,29 @@ resource.volume.setVolume(0.5); // 50%
 ---
 
 ### SPEC-07 — Slash Commands Migration
-**Status:** `pending`  
+**Status:** `✅ selesai` — Juli 2026  
 **Prioritas:** Rendah (Long-term)  
 
 > ⚠️ **Keputusan Arsitektur:** Prefix commands `mao.` **tetap dipertahankan** sebagai sistem utama dan tidak dihapus. Slash commands ditambahkan sebagai lapisan tambahan (dual-mode), bukan pengganti.
 
 **Requirements:**
-- [ ] Tambah slash commands sebagai alternatif di samping prefix `mao.` (bukan menggantikan)
-- [ ] Daftarkan commands via `REST` API Discord saat bot startup
-- [ ] Prefix `mao.` tetap berfungsi penuh setelah migrasi
-- [ ] Slash commands dan prefix commands berbagi logika yang sama (tidak duplikasi)
+- [x] Tambah slash commands sebagai alternatif di samping prefix `mao.` (bukan menggantikan)
+- [x] Daftarkan commands via `REST` API Discord saat bot startup
+- [x] Prefix `mao.` tetap berfungsi penuh setelah migrasi
+- [x] Slash commands dan prefix commands berbagi logika yang sama (tidak duplikasi)
 
-**Technical Note:**
-- Gunakan `discord.js` `SlashCommandBuilder` dan `interactionCreate` event
-- Pisahkan logika bisnis ke fungsi terpisah yang bisa dipanggil dari keduanya
-- Contoh pola dual-mode:
-```js
-// commands/play.js
-async function executeLogic(guildId, query, channel, member) { ... }
+**Acceptance Criteria:**
+- Semua 16 command bisa dipanggil via `mao.<cmd>` maupun `/<cmd>` ✅
+- Logika bisnis tidak terduplikasi — satu `executeLogic()` per command ✅
+- Slash commands terdaftar otomatis saat bot startup ✅
 
-// Prefix handler
-execute(message, args) { executeLogic(message.guild.id, args.join(' '), message.channel, message.member); }
-
-// Slash handler  
-executeSlash(interaction) { executeLogic(interaction.guildId, interaction.options.getString('query'), interaction.channel, interaction.member); }
-```
+**Perubahan:**
+- `utils/responder.js` (baru) — abstraksi `Responder` class: normalise `Message` dan `ChatInputCommandInteraction` ke interface tunggal (`reply`, `send`, `defer`, `guildId`, `userId`, `member`, dll).
+- `utils/session.js` — diupdate agar `getOrCreateSession()` dan `isInSameVoiceChannel()` menerima `Responder` maupun `Message`.
+- Semua 16 command — refactor ke pola `executeLogic(r, ...)` + `execute()` + `executeSlash()` + `data` (SlashCommandBuilder). Command dengan nama titik (`info.auto`, `ownership.move`) punya property `slashName` (`infoauto`, `ownership-move`).
+- `events/interactionCreate.js` (baru) — dispatch slash command interactions ke `executeSlash()`, lookup by `commandName` atau `slashName` mapping.
+- `index.js` — tambah `registerSlashCommands()` dipanggil dari `client.ready`: guild-scoped deploy bila `GUILD_ID` ada, global deploy bila tidak. `CLIENT_ID` bisa diambil otomatis dari `client.user.id`.
+- `.env.example` — tambah `CLIENT_ID`, `GUILD_ID`, `PREFIX`, `WEBHOOK_URL`.
 
 
 ---
@@ -383,24 +384,24 @@ executeSlash(interaction) { executeLogic(interaction.guildId, interaction.option
 ```
 music bot/
 ├── .env                    # Variabel environment (tidak di-commit)
-├── .env.example            # Template env vars
+├── .env.example            # Template env vars (TOKEN, CLIENT_ID, GUILD_ID, YOUTUBE_API_KEY, PREFIX, WEBHOOK_URL)
 ├── .gitignore
-├── index.js                # Entry point: client setup, command/event loader
+├── index.js                # Entry point: client setup, command/event loader, slash command registration
 ├── playerStore.js          # Singleton Map: guildId → session
 ├── langStore.js            # Singleton Map: guildId → lang string
 ├── listenMoeWs.js          # listen.moe WebSocket client
 ├── package.json
 │
-├── commands/
+├── commands/               # Semua command: prefix + slash (dual-mode)
 │   ├── auto.js             # Toggle auto-play rekomendasi YT
-│   ├── help.js             # Embed daftar command (trilingual)
+│   ├── help.js             # Embed daftar command (trilingual, prefix + slash)
 │   ├── info.js             # Info lagu radio saat ini
-│   ├── info.auto.js        # Toggle auto-broadcast per-channel
+│   ├── info.auto.js        # Toggle auto-broadcast (slashName: infoauto)
 │   ├── lang.js             # Ganti bahasa per-guild
 │   ├── leave.js            # Disconnect dari VC
 │   ├── loop.js             # Toggle loop
 │   ├── move.js             # Pindah ke VC user
-│   ├── ownership.move.js   # Transfer ownership
+│   ├── ownership.move.js   # Transfer ownership (slashName: ownership-move)
 │   ├── pause.js            # Pause player
 │   ├── play.js             # ← Core: queue + playback engine
 │   ├── queue.js            # Tampilkan antrian
@@ -410,13 +411,16 @@ music bot/
 │   └── stream.js           # Radio listen.moe
 │
 ├── events/
-│   ├── messageCreate.js    # Prefix command dispatcher
-│   └── ready.js            # Bot online handler
+│   ├── interactionCreate.js # ← Slash command dispatcher (baru)
+│   ├── messageCreate.js     # Prefix command dispatcher
+│   └── ready.js             # Bot online handler
 │
 └── utils/
     ├── lang.js             # i18n dictionary + getMsg()
+    ├── responder.js        # ← Abstraksi Message/Interaction (baru)
+    ├── session.js          # getOrCreateSession(), isInSameVoiceChannel()
     ├── ytAuto.js           # YouTube Data API v3 auto-recommendation
-    └── ytScraper.js        # YouTube → MP3 URL resolver
+    └── ytScraper.js        # YouTube → MP3 URL resolver (retry + fallback)
 ```
 
 ---
@@ -430,20 +434,45 @@ npm install
 
 # 2. Buat file .env
 cp .env.example .env
-# Edit .env: isi TOKEN dan YOUTUBE_API_KEY
+# Edit .env: isi TOKEN, CLIENT_ID, YOUTUBE_API_KEY
+# Untuk development, isi GUILD_ID agar slash commands terdaftar instan
 
 # 3. Jalankan bot
 npm run dev       # dengan nodemon (auto-restart)
 npm start         # production
 ```
 
+### Slash Commands — Cara Kerja Registrasi
+Slash commands **didaftarkan otomatis** setiap kali bot online via `registerSlashCommands()` di `index.js`.
+
+- Bila `GUILD_ID` diisi → deploy ke guild tersebut saja (update instan, cocok untuk dev)
+- Bila `GUILD_ID` kosong → deploy global (propagasi ~1 jam, cocok untuk production)
+- `CLIENT_ID` diambil otomatis dari `client.user.id` bila tidak diisi di `.env`
+
 ### Menambah Command Baru
 1. Buat file `commands/<nama>.js`
-2. Export objek dengan `{ name, execute(message, args) }`
-3. `name` harus sesuai dengan kata setelah prefix (contoh: `name: 'play'` → `mao.play`)
-4. Command otomatis di-load oleh `index.js` — tidak perlu registrasi manual
-5. Gunakan `getMsg(guildId, key)` untuk semua pesan user-facing
-6. Untuk pesan baru, tambahkan key di ketiga bahasa pada `utils/lang.js`
+2. Export objek dengan struktur dual-mode:
+```js
+const { SlashCommandBuilder } = require('discord.js');
+const { Responder } = require('../utils/responder');
+
+function executeLogic(r, /* args */) {
+    // seluruh logika bisnis di sini, pakai r.reply(), r.guildId, r.userId, dll
+}
+
+module.exports = {
+    name: 'namaprefix',           // dipakai oleh messageCreate.js
+    // slashName: 'namaslash',    // opsional, bila nama mengandung titik
+    data: new SlashCommandBuilder()
+        .setName('namaslash')
+        .setDescription('Deskripsi command'),
+    execute(message, args)      { executeLogic(new Responder(message), /* args */); },
+    executeSlash(interaction)   { executeLogic(new Responder(interaction), /* opts */); },
+};
+```
+3. Command otomatis di-load oleh `index.js` — tidak perlu registrasi manual
+4. Slash command otomatis terdaftar ke Discord saat bot restart
+5. Untuk pesan baru, tambahkan key di ketiga bahasa pada `utils/lang.js`
 
 ### Menambah Bahasa Baru
 1. Tambah objek bahasa baru di `utils/lang.js` (contoh: `KR: { ... }`)
